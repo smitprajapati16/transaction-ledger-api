@@ -1,0 +1,235 @@
+{
+  "info": {
+    "_postman_id": "b3e04e9c-a123-4b67-9cde-f1234567890a",
+    "name": "Transaction Ledger API",
+    "description": "Collection of requests for testing the Transaction Ledger API with MongoDB multi-document transactions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "accountId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "2. Create Account",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();",
+              "if (response.data && response.data.id) {",
+              "    pm.collectionVariables.set('accountId', response.data.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Smit Prajapati\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "accounts"]
+        }
+      }
+    },
+    {
+      "name": "3. Get Account Balance",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}/balance",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "accounts", "{{accountId}}", "balance"]
+        }
+      }
+    },
+    {
+      "name": "4. Add Credit Transaction",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"credit\",\n  \"amount\": 500,\n  \"description\": \"Initial account deposit\",\n  \"reference_id\": \"REF-001\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}/transactions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "accounts", "{{accountId}}", "transactions"]
+        }
+      }
+    },
+    {
+      "name": "5. Add Debit Transaction",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"debit\",\n  \"amount\": 120.50,\n  \"description\": \"Grocery shopping\",\n  \"reference_id\": \"REF-002\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}/transactions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "accounts", "{{accountId}}", "transactions"]
+        }
+      }
+    },
+    {
+      "name": "6. Test Overdraft Rejection (Debit too large)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"debit\",\n  \"amount\": 1000,\n  \"description\": \"Overdraft attempt\",\n  \"reference_id\": \"REF-003\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}/transactions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "accounts", "{{accountId}}", "transactions"]
+        }
+      }
+    },
+    {
+      "name": "7. Test Duplicate Reference Prevention",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"credit\",\n  \"amount\": 100,\n  \"description\": \"Duplicate reference retry\",\n  \"reference_id\": \"REF-001\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}/transactions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "accounts", "{{accountId}}", "transactions"]
+        }
+      }
+    },
+    {
+      "name": "8. Get All Transactions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}/transactions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "accounts", "{{accountId}}", "transactions"]
+        }
+      }
+    },
+    {
+      "name": "9. Filter Credit Transactions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}/transactions?type=credit",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "accounts", "{{accountId}}", "transactions"],
+          "query": [
+            {
+              "key": "type",
+              "value": "credit"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "10. Filter Debit Transactions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}/transactions?type=debit",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "accounts", "{{accountId}}", "transactions"],
+          "query": [
+            {
+              "key": "type",
+              "value": "debit"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "11. Transfer Money Between Accounts (Bonus)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"source_account_id\": \"{{accountId}}\",\n  \"destination_account_id\": \"{{accountId}}\",\n  \"amount\": 30,\n  \"description\": \"Payment to friend\",\n  \"reference_id\": \"TRF-001\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/transfers",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "transfers"]
+        }
+      }
+    }
+  ]
+}
+
