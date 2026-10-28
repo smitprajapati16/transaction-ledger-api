@@ -1,0 +1,40 @@
+{
+  "name": "transaction-ledger-api",
+  "version": "1.0.0",
+  "description": "Financial Transaction Ledger API with MongoDB transactions and strict concurrency safety",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "start:mem": "node src/server-dev.js",
+    "dev": "node --watch src/server.js",
+    "dev:mem": "node src/server-dev.js",
+    "demo": "node scripts/demo.js",
+    "test": "jest --runInBand --detectOpenHandles --forceExit"
+  },
+  "keywords": [
+    "ledger",
+    "financial",
+    "mongodb",
+    "transactions",
+    "express",
+    "zod"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.2",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 30000
+  }
+}
+
